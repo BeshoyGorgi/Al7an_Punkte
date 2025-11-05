@@ -31,38 +31,47 @@ async function ladeKinderDetails() {
 // Änderungen speichern beim Verlassen der Zelle
 tbody.addEventListener("blur", async (e) => {
   const td = e.target;
-  if (!td.matches("td[contenteditable='true']")) return; // Nur editable-Zellen
+  if (!td.matches("td[contenteditable='true']")) return;
   const tr = td.parentElement;
   const id = tr.dataset.id;
   if (!id) return;
 
   const spaltenIndex = td.cellIndex;
-  let feldName;
-  if (spaltenIndex === 1) feldName = "klasse";
-  if (spaltenIndex === 2) feldName = "eltern";
-  if (spaltenIndex === 3) feldName = "telefon";
+  const feldMap = {
+    1: "klasse",
+    2: "eltern",
+    3: "telefon"
+  };
+  const feldName = feldMap[spaltenIndex];
   if (!feldName) return;
 
   const wert = td.textContent.trim();
 
   try {
-    await fetch(`http://localhost:3000/api/kinder/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/kinder/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ [feldName]: wert })
     });
+
+    if (!response.ok) {
+      const result = await response.json();
+      alert(result.error || "Fehler beim Speichern in der DB.");
+    }
   } catch (err) {
-    console.error("Fehler beim Speichern:", err);
+    console.error("Fehler beim Speichern in der DB:", err);
   }
 }, true);
+
 
 // Enter-Taste speichert automatisch
 tbody.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
-    e.preventDefault();
-    e.target.blur();
+    e.preventDefault(); // Kein Zeilenumbruch
+    e.target.blur();    // blur-Event feuert und speichert
   }
 });
+
 
 // Funktion direkt aufrufen
 ladeKinderDetails();

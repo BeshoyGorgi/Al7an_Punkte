@@ -1,11 +1,14 @@
 import mysql from "mysql2";
 
 const db = mysql.createConnection({
-  host: "localhost",      // oder 127.0.0.1 --> http://localhost:3000/api/kinder
-  user: "root",           // dein MySQL-Benutzername
-  password: "IHIBHE10d.", // ersetze das durch dein MySQL-Passwort
-  database: "al7an_punkte"  // der Name deiner Datenbank
+  host: "localhost", //  http://localhost:3000/api/kinder
+  user: "root",
+  password: "IHIBHE10d.",
+  database: "al7an_punkte"
 });
+
+// Promisify
+const dbPromise = db.promise();
 
 db.connect((err) => {
   if (err) {
@@ -15,4 +18,4 @@ db.connect((err) => {
   }
 });
 
-export default db;
+export default dbPromise;
