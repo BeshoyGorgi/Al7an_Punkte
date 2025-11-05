@@ -19,7 +19,7 @@ table {
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-
+app.use
 th, td {
   border: 1px solid #ddd;
   padding: 0.8rem 1.2rem;
@@ -85,4 +85,71 @@ tr:nth-child(even) {
   z-index: 10;
   border-radius: 50%; 
   overflow: hidden;  
+}
+
+
+/* Bild hinzufügen */
+.kinder-bild {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  display: block;
+  margin: 0 auto 6px auto;
+}
+
+/* Container für Bild + Buttons nebeneinander */
+.bild-container {
+  display: flex;
+  flex-direction: column; /* Bild oben, Buttons unten */
+  align-items: center;
+}
+
+/* Container für die Buttons nebeneinander */
+.bild-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 60%; /* Breite unter dem Bild, damit Buttons nicht zu weit auseinander stehen */
+  margin-top: 4px;
+}
+
+/* Buttons */
+.bild-upload-label,
+.bild-loeschen {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 24px;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.bild-upload-label {
+  background-color: #0078d7;
+  color: white;
+}
+
+.bild-upload-label:hover {
+  background-color: #005fa3;
+  transform: scale(1.1);
+}
+
+.bild-loeschen {
+  background-color: #ff5c5c;
+  color: white;
+}
+
+.bild-loeschen:hover {
+  background-color: #e04b4b;
+  transform: scale(1.1);
+}
+
+/* Unsichtbares File Input */
+.bild-upload {
+  display: none;
 }

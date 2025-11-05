@@ -1,7 +1,9 @@
+// details.js - ersetzt deinen bisherigen Code
+
 const tbody = document.querySelector("#kinderDetails tbody");
 const role = localStorage.getItem("userRole"); // Rolle aus localStorage
 
-// Kinder aus der DB laden
+// ----- Lade Kinder -----
 async function ladeKinderDetails() {
   try {
     const response = await fetch("http://localhost:3000/api/kinder");
@@ -15,23 +17,44 @@ async function ladeKinderDetails() {
       const tr = document.createElement("tr");
       tr.dataset.id = kind.id; // ID speichern
 
-      // Nur admin darf contenteditable setzen
+
+     // Falls kein Bild existiert, relativer Platzhalter
+    const bildUrl = kind.bildUrl ? kind.bildUrl : "../images/platzhalter.png";
+
+
+
+
       tr.innerHTML = `
-        <td>${kind.name}</td>
-        <td ${role === "admin" ? 'contenteditable="true"' : ""}>${kind.klasse || ""}</td>
-        <td ${role === "admin" ? 'contenteditable="true"' : ""}>${kind.eltern || ""}</td>
-        <td ${role === "admin" ? 'contenteditable="true"' : ""}>${kind.telefon || ""}</td>
-      `;
+  <td>
+    <div class="bild-container">
+      <img src="${bildUrl}" alt="Bild von ${escapeHtml(kind.name)}" class="kinder-bild">
+      ${role === "admin" ? `
+        <div class="bild-buttons">
+          <button class="bild-loeschen" data-id="${kind.id}">-</button>
+          <label class="bild-upload-label" for="upload-${kind.id}">+</label>
+          <input id="upload-${kind.id}" type="file" accept="image/*" class="bild-upload" data-id="${kind.id}">
+        </div>
+      ` : ""}
+    </div>
+  </td>
+  <td>${escapeHtml(kind.name)}</td>
+  <td ${role === "admin" ? 'contenteditable="true"' : ""}>${escapeHtml(kind.klasse || "")}</td>
+  <td ${role === "admin" ? 'contenteditable="true"' : ""}>${escapeHtml(kind.eltern || "")}</td>
+  <td ${role === "admin" ? 'contenteditable="true"' : ""}>${escapeHtml(kind.telefon || "")}</td>
+`;
+
+
       tbody.appendChild(tr);
     });
 
   } catch (err) {
     console.error(err);
-    tbody.innerHTML = "<tr><td colspan='4'>Fehler beim Laden der Kinder</td></tr>";
+    // colspan auf 5 angepasst (wegen neuer Bild-Spalte)
+    tbody.innerHTML = "<tr><td colspan='5'>Fehler beim Laden der Kinder</td></tr>";
   }
 }
 
-// Änderungen speichern beim Verlassen der Zelle (nur admin erlaubt)
+// ----- Save changes on blur (wie vorher) -----
 tbody.addEventListener("blur", async (e) => {
   if (role !== "admin") return; // Gäste dürfen nichts ändern
   const td = e.target;
@@ -41,8 +64,9 @@ tbody.addEventListener("blur", async (e) => {
   const id = tr.dataset.id;
   if (!id) return;
 
-  const spaltenIndex = td.cellIndex;
-  const feldMap = { 1: "klasse", 2: "eltern", 3: "telefon" };
+  const spaltenIndex = td.cellIndex; // 0 Bild, 1 Name, 2 Klasse, 3 Eltern, 4 Telefon
+  // Map anpassen - Name ist nicht editierbar in deinem Beispiel, wir speichern nur 2..4
+  const feldMap = { 2: "klasse", 3: "eltern", 4: "telefon" };
   const feldName = feldMap[spaltenIndex];
   if (!feldName) return;
 
@@ -64,16 +88,90 @@ tbody.addEventListener("blur", async (e) => {
   }
 }, true);
 
-// Enter-Taste speichert automatisch (nur admin)
+// ----- Enter speichert (wie vorher) -----
 tbody.addEventListener("keydown", (e) => {
-  if (role !== "admin") return; // Gäste dürfen nichts ändern
+  if (role !== "admin") return;
   if (e.key === "Enter") {
-    e.preventDefault(); // Kein Zeilenumbruch
-    e.target.blur();    // blur-Event feuert und speichert
+    e.preventDefault();
+    e.target.blur();
   }
 });
 
-// Funktion direkt aufrufen
+// ----- Bild-Upload (nur Admins) -----
+tbody.addEventListener("change", async (e) => {
+  if (role !== "admin") return;
+
+  const fileInput = e.target;
+  if (!fileInput.classList.contains("bild-upload")) return;
+
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  const id = fileInput.dataset.id;
+  const formData = new FormData();
+  formData.append("bild", file);
+
+  try {
+    const response = await fetch(`http://localhost:3000/api/kinder/${id}/bild`, {
+      method: "POST",
+      body: formData
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(()=>({error: 'Upload fehlgeschlagen'}));
+      throw new Error(err.error || "Fehler beim Hochladen");
+    }
+
+    const result = await response.json();
+    // Neues Bild anzeigen (erwartet result.bildUrl)
+    const img = fileInput.parentElement.querySelector("img.kinder-bild");
+    if (img && result.bildUrl) img.src = result.bildUrl;
+    alert("Bild erfolgreich aktualisiert!");
+   ladeKinderDetails(); // Tabelle neu laden, damit neues Bild sichtbar ist
+
+  } catch (err) {
+    console.error("Fehler beim Hochladen des Bildes:", err);
+    alert("Fehler beim Hochladen des Bildes.");
+  }
+});
+
+// ----- Bild löschen (Button) -----
+tbody.addEventListener("click", async (e) => {
+  if (role !== "admin") return;
+  const btn = e.target;
+  if (!btn.classList.contains("bild-loeschen")) return;
+
+  const id = btn.dataset.id;
+  if (!confirm("Bild wirklich löschen?")) return;
+
+  try {
+    const response = await fetch(`http://localhost:3000/api/kinder/${id}/bild`, {
+      method: "DELETE"
+    });
+    if (!response.ok) throw new Error("Fehler beim Löschen");
+
+    // aktualisiere Anzeige: setze Platzhalter
+    const img = btn.parentElement.querySelector("img.kinder-bild");
+    if (img) img.src = "../images/platzhalter.png";
+    alert("Bild gelöscht.");
+  } catch (err) {
+    console.error("Fehler beim Löschen:", err);
+    alert("Fehler beim Löschen des Bildes.");
+  }
+});
+
+// ----- Hilfsfunktionen -----
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+// Direkt aufrufen
 ladeKinderDetails();
 
 // Zurück-Button
@@ -81,14 +179,9 @@ document.getElementById("zurueckButton").addEventListener("click", () => {
   window.location.href = "/frontend/main/index.html";
 });
 
-
 // logout Button
 const logoutButton = document.getElementById("logoutButton");
-
 logoutButton.addEventListener("click", () => {
-  // Benutzerrolle aus localStorage entfernen
   localStorage.removeItem("userRole");
-
-  // Zur Login-Seite weiterleiten
   window.location.href = "/frontend/login/login.html";
 });
