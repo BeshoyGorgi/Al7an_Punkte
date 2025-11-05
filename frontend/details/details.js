@@ -80,3 +80,15 @@ ladeKinderDetails();
 document.getElementById("zurueckButton").addEventListener("click", () => {
   window.location.href = "/frontend/main/index.html";
 });
+
+
+// logout Button
+const logoutButton = document.getElementById("logoutButton");
+
+logoutButton.addEventListener("click", () => {
+  // Benutzerrolle aus localStorage entfernen
+  localStorage.removeItem("userRole");
+
+  // Zur Login-Seite weiterleiten
+  window.location.href = "/frontend/login/login.html";
+});

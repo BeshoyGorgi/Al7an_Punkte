@@ -456,4 +456,14 @@ if (role === "guest") {
   document.getElementById("removeColumn")?.remove();
 }
 
+// logout Button
+const logoutButton = document.getElementById("logoutButton");
+
+logoutButton.addEventListener("click", () => {
+  // Benutzerrolle aus localStorage entfernen
+  localStorage.removeItem("userRole");
+
+  // Zur Login-Seite weiterleiten
+  window.location.href = "/frontend/login/login.html";
+});
 

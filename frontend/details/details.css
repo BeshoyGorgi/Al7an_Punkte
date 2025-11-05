@@ -48,3 +48,26 @@ tr:nth-child(even) {
 #zurueckButton:hover {
   background-color: #005fa3;
 }
+
+
+#logoutButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 0.5rem 1rem;
+  background-color: #ff5c5c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
+  z-index: 1000;
+}
+
+#logoutButton:hover {
+  background-color: #e04b4b;
+  transform: scale(1.05);
+}
