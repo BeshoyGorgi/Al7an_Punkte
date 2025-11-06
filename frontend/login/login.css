@@ -67,13 +67,6 @@ body {
   transform: translateY(0);
 }
 
-#guestButton {
-  background-color: #ACB6E5;
-}
-
-#guestButton:hover {
-  background-color: #8fa3db;
-}
 
 #errorMessage {
   margin-top: 10px;

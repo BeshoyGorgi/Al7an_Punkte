@@ -1,7 +1,6 @@
 // details.js - ersetzt deinen bisherigen Code
 
 const tbody = document.querySelector("#kinderDetails tbody");
-const role = localStorage.getItem("userRole"); // Rolle aus localStorage
 
 // ----- Lade Kinder -----
 async function ladeKinderDetails() {
@@ -10,53 +9,44 @@ async function ladeKinderDetails() {
     if (!response.ok) throw new Error("Fehler beim Laden der Kinder");
 
     const kinderListe = await response.json();
-
     tbody.innerHTML = ""; // Tabelle leeren
 
     kinderListe.forEach(kind => {
       const tr = document.createElement("tr");
-      tr.dataset.id = kind.id; // ID speichern
+      tr.dataset.id = kind.id;
 
-
-     // Falls kein Bild existiert, relativer Platzhalter
-    const bildUrl = kind.bildUrl ? kind.bildUrl : "../images/platzhalter.png";
-
-
-
+      // Falls kein Bild existiert, relativer Platzhalter
+      const bildUrl = kind.bildUrl ? kind.bildUrl : "../images/platzhalter.png";
 
       tr.innerHTML = `
-  <td>
-    <div class="bild-container">
-      <img src="${bildUrl}" alt="Bild von ${escapeHtml(kind.name)}" class="kinder-bild">
-      ${role === "admin" ? `
-        <div class="bild-buttons">
-          <button class="bild-loeschen" data-id="${kind.id}">-</button>
-          <label class="bild-upload-label" for="upload-${kind.id}">+</label>
-          <input id="upload-${kind.id}" type="file" accept="image/*" class="bild-upload" data-id="${kind.id}">
-        </div>
-      ` : ""}
-    </div>
-  </td>
-  <td>${escapeHtml(kind.name)}</td>
-  <td ${role === "admin" ? 'contenteditable="true"' : ""}>${escapeHtml(kind.klasse || "")}</td>
-  <td ${role === "admin" ? 'contenteditable="true"' : ""}>${escapeHtml(kind.eltern || "")}</td>
-  <td ${role === "admin" ? 'contenteditable="true"' : ""}>${escapeHtml(kind.telefon || "")}</td>
-`;
-
+        <td>
+          <div class="bild-container">
+            <img src="${bildUrl}" alt="Bild von ${escapeHtml(kind.name)}" class="kinder-bild">
+            <div class="bild-buttons">
+              <button class="bild-loeschen" data-id="${kind.id}">-</button>
+              <label class="bild-upload-label" for="upload-${kind.id}">+</label>
+              <input id="upload-${kind.id}" type="file" accept="image/*" class="bild-upload" data-id="${kind.id}">
+            </div>
+          </div>
+        </td>
+        <td>${escapeHtml(kind.name)}</td>
+        <td contenteditable="true">${escapeHtml(kind.klasse || "")}</td>
+        <td contenteditable="true">${escapeHtml(kind.eltern || "")}</td>
+        <td contenteditable="true">${escapeHtml(kind.telefon || "")}</td>
+      `;
 
       tbody.appendChild(tr);
     });
 
   } catch (err) {
     console.error(err);
-    // colspan auf 5 angepasst (wegen neuer Bild-Spalte)
     tbody.innerHTML = "<tr><td colspan='5'>Fehler beim Laden der Kinder</td></tr>";
   }
 }
 
+
 // ----- Save changes on blur (wie vorher) -----
 tbody.addEventListener("blur", async (e) => {
-  if (role !== "admin") return; // Gäste dürfen nichts ändern
   const td = e.target;
   if (!td.matches("td[contenteditable='true']")) return;
 
@@ -90,7 +80,6 @@ tbody.addEventListener("blur", async (e) => {
 
 // ----- Enter speichert (wie vorher) -----
 tbody.addEventListener("keydown", (e) => {
-  if (role !== "admin") return;
   if (e.key === "Enter") {
     e.preventDefault();
     e.target.blur();
@@ -99,7 +88,6 @@ tbody.addEventListener("keydown", (e) => {
 
 // ----- Bild-Upload (nur Admins) -----
 tbody.addEventListener("change", async (e) => {
-  if (role !== "admin") return;
 
   const fileInput = e.target;
   if (!fileInput.classList.contains("bild-upload")) return;
@@ -137,7 +125,6 @@ tbody.addEventListener("change", async (e) => {
 
 // ----- Bild löschen (Button) -----
 tbody.addEventListener("click", async (e) => {
-  if (role !== "admin") return;
   const btn = e.target;
   if (!btn.classList.contains("bild-loeschen")) return;
 
