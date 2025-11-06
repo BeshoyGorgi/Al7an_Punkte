@@ -1,12 +1,12 @@
 body {
   font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+  background: #1A3D64;
   text-align: center;
   padding: 2rem;
 }
 
 h1 {
-  color: #333;
+  color: #F4F4F4; 
   margin-bottom: 1rem;
 }
 
@@ -14,12 +14,13 @@ table {
   border-collapse: collapse;
   margin: 0 auto 1rem auto;
   width: 80%;
-  background: white;
+  background: #F4F4F4;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 app.use
+
 th, td {
   border: 1px solid #ddd;
   padding: 0.8rem 1.2rem;
@@ -27,7 +28,7 @@ th, td {
 }
 
 th {
-  background: #0078d7;
+  background: #0C2B4E;
   color: white;
 }
 
@@ -38,8 +39,8 @@ tr:nth-child(even) {
 #zurueckButton {
   padding: 0.5rem 1rem;
   font-size: 1rem;
-  background-color: #0078d7;
-  color: white;
+  background-color: #0C2B4E;
+  color: #F4F4F4;
   border: none;
   border-radius: 5px;
   cursor: pointer;
