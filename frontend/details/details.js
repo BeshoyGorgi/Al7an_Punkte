@@ -5,11 +5,13 @@ const tbody = document.querySelector("#kinderDetails tbody");
 // ----- Lade Kinder -----
 async function ladeKinderDetails() {
   try {
-    const response = await fetch("http://localhost:3000/api/kinder");
+    const email = localStorage.getItem("email"); // ✅ Email holen
+
+    const response = await fetch(`http://localhost:3000/api/kinder?email=${email}`); // ✅ an API übergeben
     if (!response.ok) throw new Error("Fehler beim Laden der Kinder");
 
     const kinderListe = await response.json();
-    tbody.innerHTML = ""; // Tabelle leeren
+    tbody.innerHTML = "";
 
     kinderListe.forEach(kind => {
       const tr = document.createElement("tr");
@@ -168,7 +170,8 @@ document.getElementById("zurueckButton").addEventListener("click", () => {
 
 // logout Button
 const logoutButton = document.getElementById("logoutButton");
+
 logoutButton.addEventListener("click", () => {
-  localStorage.removeItem("userRole");
+  localStorage.removeItem("email");
   window.location.href = "/frontend/login/login.html";
 });

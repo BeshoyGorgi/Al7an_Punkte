@@ -9,7 +9,8 @@ let aktiveZelle = null;
 // === Kinder aus DB laden ===
 async function ladeKinder() {
   try {
-    const response = await fetch("http://localhost:3000/api/kinder");
+    const email = localStorage.getItem("email"); 
+    const response = await fetch(`http://localhost:3000/api/kinder?email=${email}`);
     const kinder = await response.json();
     kinder.forEach(k => {
       const neueZeile = document.createElement("tr");
@@ -56,7 +57,10 @@ plusButton?.addEventListener("click", async () => {
     const response = await fetch("http://localhost:3000/api/kinder", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name })
+      body: JSON.stringify({ 
+      name, 
+      email: localStorage.getItem("email") 
+      })
     });
 
     const result = await response.json();
@@ -463,5 +467,6 @@ document.querySelectorAll("#meineTabelle td").forEach(td => {
 const logoutButton = document.getElementById("logoutButton");
 
 logoutButton.addEventListener("click", () => {
+  localStorage.removeItem("email");
   window.location.href = "/frontend/login/login.html";
 });
