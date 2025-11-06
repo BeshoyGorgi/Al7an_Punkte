@@ -47,7 +47,7 @@ tr:nth-child(even) {
 }
 
 #zurueckButton:hover {
-  background-color: #005fa3;
+  background-color: #1D546C;
 }
 
 
@@ -95,7 +95,7 @@ tr:nth-child(even) {
   height: 50px;
   object-fit: cover;
   border-radius: 50%;
-  border: 2px solid #ddd;
+  border: 2px solid #1D546C;
   display: block;
   margin: 0 auto 6px auto;
 }
