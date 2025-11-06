@@ -11,6 +11,27 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+//Emails
+const users = [
+  { email: "Erste-Zweite-K@al7an.com", password: "12" },
+  { email: "Dritte-Vierte-K@al7an.com", password: "34" },
+  { email: "Fünfte-Sechste-K@al7an.com", password: "56" },
+  { email: "Oberstufe@al7an.com", password: "78" }
+];
+
+
+app.post("/api/login", (req, res) => {
+  const { email, password } = req.body;
+
+  const user = users.find(u => u.email === email && u.password === password);
+  if (!user) return res.status(401).json({ error: "Ungültige Login Daten" });
+
+  res.json({ email: user.email });
+});
+
+
+
+
 
 // === BILDER-UPLOAD KONFIGURATION ===
 const uploadDir = path.join("D:", "Al7an Punkte", "Al7an_Punkte", "frontend", "images");
@@ -31,11 +52,11 @@ app.use("/images", express.static(path.join("D:", "Al7an Punkte", "Al7an_Punkte"
 
 // === Alle Kinder abrufen ===
 app.get("/api/kinder", async (req, res) => {
+  const { email } = req.query; 
   try {
-    const [rows] = await db.query("SELECT * FROM kinder");
+    const [rows] = await db.query("SELECT * FROM kinder WHERE user_email = ?", [email]);
     res.json(rows);
   } catch (err) {
-    console.error("GET Fehler:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -61,16 +82,14 @@ app.post("/api/kinder/:id/bild", upload.single("bild"), async (req, res) => {
 
 // === Neues Kind hinzufügen ===
 app.post("/api/kinder", async (req, res) => {
-  const { name, klasse = "", eltern = "", telefon = "" } = req.body;
+  const { name, klasse = "", eltern = "", telefon = "", email } = req.body;
   if (!name) return res.status(400).json({ error: "Name ist erforderlich" });
 
   try {
     const [result] = await db.query(
-      `INSERT INTO kinder 
-       (name, hymne, verhalten, anwesenheit_G, anwesenheit_U, gesamt, klasse, eltern, telefon) 
-       VALUES (?, 0, 0, 0, 0, 0, ?, ?, ?)`,
-      [name, klasse, eltern, telefon]
-    );
+      `INSERT INTO kinder (name, hymne, verhalten, anwesenheit_G, anwesenheit_U, gesamt, klasse, eltern, telefon, user_email) 
+      VALUES (?, 0, 0, 0, 0, 0, ?, ?, ?, ?)`,
+      [ name, klasse, eltern, telefon, email ]);
 
     res.json({
       id: result.insertId,
