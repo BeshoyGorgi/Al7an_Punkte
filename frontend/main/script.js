@@ -216,7 +216,7 @@ function sortiereNachGesamt() {
 
 // === Navigation zur Details-Seite ===
 document.getElementById("zuDetails")?.addEventListener("click", () => {
-  window.location.href = "/Faith_Points/frontend/details/details.html";
+  window.location.href = "/details/details.html";
 });
 
 // === Logout ===

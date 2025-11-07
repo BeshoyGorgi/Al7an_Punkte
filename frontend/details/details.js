@@ -153,12 +153,12 @@ ladeKinderDetails();
 
 // Zurück-Button
 document.getElementById("zurueckButton").addEventListener("click", () => {
-  window.location.href = "/Faith_Points/frontend/main/index.html";
+  window.location.href = "/main/index.html";
 });
 
 // Logout
 const logoutButton = document.getElementById("logoutButton");
 logoutButton.addEventListener("click", () => {
   localStorage.removeItem("email");
-  window.location.href = "/Faith_Points/frontend/login/login.html";
+  window.location.href = "/login/login.html";
 });
