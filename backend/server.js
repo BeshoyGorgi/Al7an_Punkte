@@ -34,7 +34,7 @@ app.post("/api/login", (req, res) => {
 
 
 // === BILDER-UPLOAD KONFIGURATION ===
-const uploadDir = path.join("D:", "Al7an Punkte", "Faith_Points", "frontend", "images");
+const uploadDir = path.join(process.cwd(), "frontend", "images");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
 const storage = multer.diskStorage({
@@ -46,8 +46,6 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({ storage });
-
-app.use("/images", express.static(path.join("D:", "Al7an Punkte", "Faith_Points", "frontend", "images")));
 
 
 // === Alle Kinder abrufen ===
@@ -67,12 +65,13 @@ app.post("/api/kinder/:id/bild", upload.single("bild"), async (req, res) => {
     const id = req.params.id;
     if (!req.file) return res.status(400).json({ error: "Keine Datei erhalten" });
     
-    const bildUrl = `../images/${req.file.filename}`;
+    app.use("/images", express.static(path.join(process.cwd(), "frontend", "images")));
     
     console.log("Bild gespeichert unter:", uploadDir, "als:", req.file.filename);
+    const bildUrl = `/images/${req.file.filename}`;
     await db.query("UPDATE kinder SET bildUrl = ? WHERE id = ?", [bildUrl, id]);
-
     res.json({ bildUrl });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Upload fehlgeschlagen" });
@@ -132,6 +131,15 @@ app.put("/api/kinder/:id", async (req, res) => {
 app.delete("/api/kinder/:id", async (req, res) => {
   const { id } = req.params;
   try {
+    // Bild aus DB holen
+    const [rows] = await db.query("SELECT bildUrl FROM kinder WHERE id = ?", [id]);
+    const kind = rows[0];
+    if (kind && kind.bildUrl) {
+      const filePath = path.join(process.cwd(), "frontend", "images", path.basename(kind.bildUrl));
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    }
+
+    // Kind löschen
     await db.query("DELETE FROM kinder WHERE id = ?", [id]);
     res.json({ success: true });
   } catch (err) {
@@ -139,6 +147,7 @@ app.delete("/api/kinder/:id", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // === BILD LÖSCHEN ===
 app.delete("/api/kinder/:id/bild", async (req, res) => {
@@ -150,7 +159,7 @@ app.delete("/api/kinder/:id/bild", async (req, res) => {
     const kind = rows[0];
 
     if (kind && kind.bildUrl) {
-      const filePath = path.join("D:", "Al7an Punkte", "Faith_Points", "frontend", "images", path.basename(kind.bildUrl));
+      const filePath = path.join(process.cwd(), "frontend", "images", path.basename(kind.bildUrl));
       if (fs.existsSync(filePath)) {
         try {
           fs.unlinkSync(filePath);
@@ -173,4 +182,5 @@ app.delete("/api/kinder/:id/bild", async (req, res) => {
 
 
 
-app.listen(3000, () => console.log("✅ Server läuft auf http://localhost:3000"));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`✅ Server läuft auf Port ${PORT}`));
