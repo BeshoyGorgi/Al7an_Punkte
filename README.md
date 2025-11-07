@@ -78,7 +78,24 @@ npm install
 
 Öffne MySQL und erstelle eine Datenbank:
 
-CREATE DATABASE al7an_punkte;
+CREATE DATABASE Faith_Points;
+
+Table: kinder
+
+Columns:
+id int AI PK 
+name varchar(100) 
+hymne int 
+verhalten int 
+anwesenheit_G int 
+anwesenheit_U int 
+gesamt int 
+klasse varchar(50) 
+eltern varchar(100) 
+telefon varchar(20) 
+bildUrl varchar(255) 
+user_id int 
+user_email varchar(255)
 
 
 # Passe deine db.js-Datei an:
@@ -87,7 +104,7 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'deinPasswort',
-  database: 'al7an_punkte'
+  database: 'Faith_Points'
 });
 
 
