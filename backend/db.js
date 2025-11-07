@@ -4,7 +4,7 @@ const db = mysql.createConnection({
   host: "localhost", //  http://localhost:3000/api/kinder
   user: "root",
   password: "IHIBHE10d.",
-  database: "al7an_punkte"
+  database: "Faith_Points"
 });
 
 // Promisify
