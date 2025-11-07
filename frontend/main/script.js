@@ -9,6 +9,7 @@ const tbody = tabelle.querySelector("tbody");
 let aktiveZelle = null;
 
 // === Kinder aus DB laden ===
+
 async function ladeKinder() {
   try {
     const email = localStorage.getItem("email"); 
