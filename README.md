@@ -92,8 +92,14 @@ const db = mysql.createConnection({
 
 
 # Starte den Server:
+Du musst im den Pfad zu backend führen: cd backend
+
 node server.js
 
+# Stoppe den Server:
+netstat -ano | findstr :3000
+
+taskkill /PID (Die Zahl die ganz rechts steht) /F     
 
 # Öffne das Frontend über:
 
