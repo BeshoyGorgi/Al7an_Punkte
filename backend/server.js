@@ -11,7 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// === Frontend servieren ===
+// ==== Statische Frontend-Dateien ====
 const frontendPath = path.join(process.cwd(), "frontend");
 app.use(express.static(frontendPath));
 
@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(frontendPath, "login", "login.html"));
 });
 
-// === Emails / Login ===
+// === LOGIN ===
 const users = [
   { email: "Kirchenchor-Klasse1@al7an.com", password: "KGK1" },
   { email: "Kirchenchor-Klasse2@al7an.com", password: "KGK2" },
@@ -35,7 +35,7 @@ app.post("/api/login", (req, res) => {
   res.json({ email: user.email });
 });
 
-// === Bilder Upload ===
+// ==== BILDER ====
 const uploadDir = path.join(frontendPath, "images");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -136,6 +136,6 @@ app.delete("/api/kinder/:id/bild", async (req, res) => {
   }
 });
 
-// === Server starten auf Render-Port ===
+// === Server starten ===
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Server läuft auf Port ${PORT}`));
