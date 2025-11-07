@@ -165,7 +165,7 @@ ladeKinderDetails();
 
 // Zurück-Button
 document.getElementById("zurueckButton").addEventListener("click", () => {
-  window.location.href = "/frontend/main/index.html";
+  window.location.href = "/Faith_Points/frontend/main/index.html";
 });
 
 // logout Button
@@ -173,5 +173,5 @@ const logoutButton = document.getElementById("logoutButton");
 
 logoutButton.addEventListener("click", () => {
   localStorage.removeItem("email");
-  window.location.href = "/frontend/login/login.html";
+  window.location.href = "/Faith_Points/frontend/login/login.html";
 });

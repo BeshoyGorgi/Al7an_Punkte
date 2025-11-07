@@ -450,7 +450,7 @@ tabelle.addEventListener("dblclick", (e) => {
 
 // zu Deteils-seite
 document.getElementById("zuDetails").addEventListener("click", () => {
-  window.location.href = "/frontend/details/details.html";
+  window.location.href = "/Faith_Points/frontend/details/details.html";
 });
 
 
@@ -468,5 +468,5 @@ const logoutButton = document.getElementById("logoutButton");
 
 logoutButton.addEventListener("click", () => {
   localStorage.removeItem("email");
-  window.location.href = "/frontend/login/login.html";
+  window.location.href = "/Faith_Points/frontend/login/login.html";
 });

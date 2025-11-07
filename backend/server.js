@@ -34,7 +34,7 @@ app.post("/api/login", (req, res) => {
 
 
 // === BILDER-UPLOAD KONFIGURATION ===
-const uploadDir = path.join("D:", "Al7an Punkte", "Al7an_Punkte", "frontend", "images");
+const uploadDir = path.join("D:", "Al7an Punkte", "Faith_Points", "frontend", "images");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
 const storage = multer.diskStorage({
@@ -47,7 +47,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-app.use("/images", express.static(path.join("D:", "Al7an Punkte", "Al7an_Punkte", "frontend", "images")));
+app.use("/images", express.static(path.join("D:", "Al7an Punkte", "Faith_Points", "frontend", "images")));
 
 
 // === Alle Kinder abrufen ===
@@ -150,7 +150,7 @@ app.delete("/api/kinder/:id/bild", async (req, res) => {
     const kind = rows[0];
 
     if (kind && kind.bildUrl) {
-      const filePath = path.join("D:", "Al7an Punkte", "Al7an_Punkte", "frontend", "images", path.basename(kind.bildUrl));
+      const filePath = path.join("D:", "Al7an Punkte", "Faith_Points", "frontend", "images", path.basename(kind.bildUrl));
       if (fs.existsSync(filePath)) {
         try {
           fs.unlinkSync(filePath);
