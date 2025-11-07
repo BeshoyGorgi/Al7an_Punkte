@@ -1,6 +1,6 @@
 # 🎵 FaithPoints
 
-Al7an Punkte ist ein webbasiertes Verwaltungssystem zur Erfassung und Auswertung von Kinderpunkten in kirchlichen oder schulischen Gruppen.
+Faith Points ist ein webbasiertes Verwaltungssystem zur Erfassung und Auswertung von Kinderpunkten in kirchlichen oder schulischen Gruppen.
 Das System wurde entwickelt, um Betreuern die digitale Verwaltung von Punkten für Hymnen, Verhalten und Anwesenheit zu ermöglichen. Inklusive Kinderprofilen mit Bildern, Kontaktdaten und automatischer Speicherung in einer MySQL-Datenbank.
 
 ---
@@ -17,7 +17,7 @@ Das System wurde entwickelt, um Betreuern die digitale Verwaltung von Punkten f�
 
 ## 💡 Über das Projekt
 
-**Al7an Punkte** ist ein Verwaltungssystem, das für Kinderaktivitäten in kirchlichen oder schulischen Gruppen entwickelt wurde.  
+**Faith Points** ist ein Verwaltungssystem, das für Kinderaktivitäten in kirchlichen oder schulischen Gruppen entwickelt wurde.  
 Jedes Kind hat zugeordnete Punkte für:
 - **Hymnen**
 - **Verhalten**
