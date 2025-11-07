@@ -222,5 +222,5 @@ document.getElementById("zuDetails")?.addEventListener("click", () => {
 // === Logout ===
 document.getElementById("logoutButton")?.addEventListener("click", () => {
   localStorage.removeItem("email");
-  window.location.href = "/Faith_Points/frontend/login/login.html";
+  window.location.href = "/login/login.html";
 });
