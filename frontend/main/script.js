@@ -6,8 +6,8 @@ const punkteMenue = document.getElementById("punkteMenue");
 const tabelle = document.getElementById("meineTabelle");
 const tbody = tabelle.querySelector("tbody");
 
-const ORANGE_AFTER_MINUTES = 1;  // 14 * 24 * 60   2 Wochen
-const RED_AFTER_MINUTES = 2;     // 28 * 24 * 60   4 Wochen
+const ORANGE_AFTER_MINUTES = 7 * 24 * 60;  // 14 * 24 * 60   2 Wochen
+const RED_AFTER_MINUTES = 14 * 24 * 60;    //  28 * 24 * 60   4 Wochen
 
 let aktiveZelle = null;
 
