@@ -6,6 +6,11 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const bildUrl = kind.bildUrl ? kind.bildUrl.replace('..', '') : '/images/platzhalter.png';
+
 dotenv.config();
 
 const app = express();
@@ -13,8 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 // --------- HIER BILDER ORDNER FREIGEBEN ---------
-app.use('/images', express.static(path.join(__dirname, 'images')));
-
+app.use('/images', express.static(path.join(__dirname, 'frontend', 'images')));
 // Andere Middlewares wie bodyParser etc.
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
