@@ -16,11 +16,7 @@ async function ladeKinderDetails() {
       const tr = document.createElement("tr");
       tr.dataset.id = kind.id;
 
-      const bildUrl = kind.bildUrl 
-        ? `${API_BASE_URL}${kind.bildUrl}`
-        : `${API_BASE_URL}/images/platzhalter.png`;
-
-
+      const bildUrl = kind.bildUrl ? kind.bildUrl : "../images/platzhalter.png";
 
       tr.innerHTML = `
         <td>
@@ -110,7 +106,7 @@ tbody.addEventListener("change", async (e) => {
 
     const result = await response.json();
     const img = fileInput.parentElement.querySelector("img.kinder-bild");
-    if (img && result.bildUrl) img.src = `${API_BASE_URL}${result.bildUrl}`;
+    if (img && result.bildUrl) img.src = result.bildUrl;
     alert("Bild erfolgreich aktualisiert!");
     ladeKinderDetails();
 
@@ -133,7 +129,7 @@ tbody.addEventListener("click", async (e) => {
     if (!response.ok) throw new Error("Fehler beim Löschen");
 
     const img = btn.parentElement.querySelector("img.kinder-bild");
-    if (img) img.src = `${API_BASE_URL}/images/platzhalter.png`;
+    if (img) img.src = "../images/platzhalter.png";
     alert("Bild gelöscht.");
     ladeKinderDetails();
   } catch (err) {
