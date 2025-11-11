@@ -134,8 +134,8 @@ tbody.addEventListener("change", async (e) => {
     // Direktes Aktualisieren des Bildes im kleinen Kreis
     const img = fileInput.parentElement.querySelector("img.kinder-bild");
     if (img && result.bildUrl) {
-      // Cache umgehen
-      img.src = result.bildUrl + "?t=" + new Date().getTime();
+    img.onload = () => URL.revokeObjectURL(img.src);
+    img.src = result.bildUrl + "?t=" + new Date().getTime();
     }
 
     alert("Bild erfolgreich aktualisiert!");
