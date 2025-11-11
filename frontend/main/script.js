@@ -430,6 +430,14 @@ tabelle.addEventListener("mousemove", (e) => {
     return;
   }
 
+  // Nur anzeigen, wenn die Zelle orange oder rot ist
+  const bg = zelle.style.backgroundColor;
+  if (bg !== "orange" && bg !== "red") {
+    tooltip.style.opacity = 0;
+    return;
+  }
+
+  // Datum ermitteln
   let datum = null;
   if (spalte === 1 && zeile.dataset.lastUpdatedHymne)
     datum = zeile.dataset.lastUpdatedHymne;
@@ -438,6 +446,7 @@ tabelle.addEventListener("mousemove", (e) => {
   if (spalte === 4 && zeile.dataset.lastUpdatedAnwesenheitU)
     datum = zeile.dataset.lastUpdatedAnwesenheitU;
 
+  // Tooltip anzeigen
   if (datum) {
     tooltip.textContent = `Letzte Änderung: ${new Date(datum).toLocaleString("de-DE")}`;
     tooltip.style.opacity = 1;
@@ -448,6 +457,7 @@ tabelle.addEventListener("mousemove", (e) => {
   }
 });
 
+// Tooltip ausblenden, wenn man die Tabelle verlässt
 tabelle.addEventListener("mouseleave", () => {
   tooltip.style.opacity = 0;
 });
