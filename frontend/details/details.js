@@ -16,7 +16,7 @@ async function ladeKinderDetails() {
       const tr = document.createElement("tr");
       tr.dataset.id = kind.id;
 
-      const bildUrl = kind.bildUrl ? kind.bildUrl : "../images/platzhalter.png";
+      const bildUrl = kind.bildUrl ? kind.bildUrl.replace('..', '') : '/images/platzhalter.png';
 
       tr.innerHTML = `
         <td>

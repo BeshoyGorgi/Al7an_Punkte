@@ -9,7 +9,6 @@ import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const bildUrl = kind.bildUrl ? kind.bildUrl.replace('..', '') : '/images/platzhalter.png';
 
 dotenv.config();
 
