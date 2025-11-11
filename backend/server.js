@@ -12,6 +12,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// --------- HIER BILDER ORDNER FREIGEBEN ---------
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+// Andere Middlewares wie bodyParser etc.
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// API-Routen
+app.use('/api/kinder', kinderRoutes);
+
+
 // ==== Statische Frontend-Dateien ====
 const frontendPath = path.join(process.cwd(), "..", "frontend");
 app.use(express.static(frontendPath));
