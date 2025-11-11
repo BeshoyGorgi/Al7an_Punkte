@@ -148,7 +148,7 @@ app.post("/api/kinder/:id/bild", upload.single("bild"), async (req, res) => {
   const { id } = req.params;
   if (!req.file) return res.status(400).json({ error: "Keine Datei erhalten" });
 
-  const bildUrl = `/images/${req.file.filename}`;
+  const bildUrl = `../images/${req.file.filename}`;
 
   try {
     // Alte Bilddatei löschen

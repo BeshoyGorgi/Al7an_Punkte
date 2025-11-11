@@ -130,10 +130,14 @@ tbody.addEventListener("change", async (e) => {
     }
 
     const result = await response.json();
+
+    // Direktes Aktualisieren des Bildes im kleinen Kreis
     const img = fileInput.parentElement.querySelector("img.kinder-bild");
     if (img && result.bildUrl) {
-      img.src = result.bildUrl + "?t=" + new Date().getTime(); // Cache umgehen
+      // Cache umgehen
+      img.src = result.bildUrl + "?t=" + new Date().getTime();
     }
+
     alert("Bild erfolgreich aktualisiert!");
 
   } catch (err) {
@@ -155,10 +159,14 @@ tbody.addEventListener("click", async (e) => {
     const response = await fetch(`${API_BASE_URL}/api/kinder/${id}/bild`, { method: "DELETE" });
     if (!response.ok) throw new Error("Fehler beim Löschen");
 
+    // Direktes Zurücksetzen des Bildes im kleinen Kreis
     const img = btn.parentElement.querySelector("img.kinder-bild");
-    if (img) img.src = "../images/platzhalter.png?t=" + new Date().getTime();
+    if (img) {
+      img.src = "../images/platzhalter.png?t=" + new Date().getTime();
+    }
+
     alert("Bild gelöscht.");
-    ladeKinderDetails();
+
   } catch (err) {
     console.error("Fehler beim Löschen:", err);
     alert("Fehler beim Löschen des Bildes.");
