@@ -20,8 +20,8 @@ function updateRowColor(row) {
 
   const diffMinutes = Math.max(diffHymne, diffAnwG, diffAnwU); // maximale Zeit der 3 Spalten
 
-  if (diffMinutes >= RED_AFTER_DAYS * 24 * 60) row.style.backgroundColor = "red";
-  else if (diffMinutes >= ORANGE_AFTER_DAYS * 24 * 60) row.style.backgroundColor = "orange";
+  if (diffMinutes >= RED_AFTER_DAYS) row.style.backgroundColor = "red"; // * 24 * 60
+  else if (diffMinutes >= ORANGE_AFTER_DAYS) row.style.backgroundColor = "orange"; // * 24 * 60
   else row.style.backgroundColor = "";
 }
 
