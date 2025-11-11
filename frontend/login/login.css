@@ -82,15 +82,14 @@ body {
 }
 
 
-/* Responsive Anpassungen für Handys */
 @media (max-width: 480px) {
   .login-container {
     padding: 20px 15px;
   }
 
   .login-container h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
+    font-size: 22px;
+    margin-bottom: 15px;
   }
 
   .login-container input[type="password"],
@@ -102,5 +101,9 @@ body {
   .login-container button {
     padding: 8px;
     font-size: 14px;
+  }
+
+  #errorMessage {
+    font-size: 13px;
   }
 }
