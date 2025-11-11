@@ -131,15 +131,17 @@ tbody.addEventListener("change", async (e) => {
 
     const result = await response.json();
     const img = fileInput.parentElement.querySelector("img.kinder-bild");
-    if (img && result.bildUrl) img.src = result.bildUrl;
+    if (img && result.bildUrl) {
+      img.src = result.bildUrl + "?t=" + new Date().getTime(); // Cache umgehen
+    }
     alert("Bild erfolgreich aktualisiert!");
-    ladeKinderDetails();
 
   } catch (err) {
     console.error("Fehler beim Hochladen des Bildes:", err);
     alert("Fehler beim Hochladen des Bildes.");
   }
 });
+
 
 // ----- Bild löschen -----
 tbody.addEventListener("click", async (e) => {
@@ -154,7 +156,7 @@ tbody.addEventListener("click", async (e) => {
     if (!response.ok) throw new Error("Fehler beim Löschen");
 
     const img = btn.parentElement.querySelector("img.kinder-bild");
-    if (img) img.src = "../images/platzhalter.png";
+    if (img) img.src = "../images/platzhalter.png?t=" + new Date().getTime();
     alert("Bild gelöscht.");
     ladeKinderDetails();
   } catch (err) {

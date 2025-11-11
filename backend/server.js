@@ -149,13 +149,25 @@ app.post("/api/kinder/:id/bild", upload.single("bild"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "Keine Datei erhalten" });
 
   const bildUrl = `/images/${req.file.filename}`;
+
   try {
+    // Alte Bilddatei löschen
+    const result = await db.query("SELECT bildUrl FROM kinder WHERE id = $1", [id]);
+    const kind = result.rows[0];
+    if (kind && kind.bildUrl) {
+      const oldPath = path.join(uploadDir, path.basename(kind.bildUrl));
+      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    }
+
+    // Neues Bild in DB speichern
     await db.query("UPDATE kinder SET bildUrl = $1 WHERE id = $2", [bildUrl, id]);
+
     res.json({ bildUrl });
   } catch (err) {
     res.status(500).json({ error: "Upload fehlgeschlagen" });
   }
 });
+
 
 app.delete("/api/kinder/:id/bild", async (req, res) => {
   const { id } = req.params;
