@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
-import db from "./db.js"; // deine DB-Verbindung
+import db from "./db.js"; // PostgreSQL Pool
+import { createTableIfNotExists } from "./initDb.js";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -15,7 +16,6 @@ app.use(express.json());
 const frontendPath = path.join(process.cwd(), "..", "frontend");
 app.use(express.static(frontendPath));
 
-// Standardroute → login.html
 app.get("/", (req, res) => {
   res.sendFile(path.join(frontendPath, "login", "login.html"));
 });
@@ -53,8 +53,8 @@ const upload = multer({ storage });
 app.get("/api/kinder", async (req, res) => {
   const { email } = req.query;
   try {
-    const [rows] = await db.query("SELECT * FROM kinder WHERE user_email = ?", [email]);
-    res.json(rows);
+    const result = await db.query("SELECT * FROM kinder WHERE user_email = $1", [email]);
+    res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -65,12 +65,12 @@ app.post("/api/kinder", async (req, res) => {
   if (!name) return res.status(400).json({ error: "Name ist erforderlich" });
 
   try {
-    const [result] = await db.query(
-      `INSERT INTO kinder (name, hymne, verhalten, anwesenheit_G, anwesenheit_U, gesamt, klasse, eltern, telefon, user_email) 
-       VALUES (?, 0, 0, 0, 0, 0, ?, ?, ?, ?)`,
+    const result = await db.query(
+      `INSERT INTO kinder (name, hymne, verhalten, anwesenheit_G, anwesenheit_U, gesamt, klasse, eltern, telefon, user_email)
+       VALUES ($1, 0, 0, 0, 0, 0, $2, $3, $4, $5) RETURNING *`,
       [name, klasse, eltern, telefon, email]
     );
-    res.json({ id: result.insertId, name, hymne: 0, verhalten: 0, anwesenheit_G: 0, anwesenheit_U: 0, gesamt: 0, klasse, eltern, telefon });
+    res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -82,9 +82,9 @@ app.put("/api/kinder/:id", async (req, res) => {
   const values = Object.values(req.body);
   if (fields.length === 0) return res.status(400).json({ error: "Keine Felder zum Aktualisieren" });
 
-  const setString = fields.map(f => `${f} = ?`).join(", ");
+  const setString = fields.map((f, i) => `${f} = $${i + 1}`).join(", ");
   try {
-    await db.query(`UPDATE kinder SET ${setString} WHERE id = ?`, [...values, id]);
+    await db.query(`UPDATE kinder SET ${setString} WHERE id = $${fields.length + 1}`, [...values, id]);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -94,13 +94,13 @@ app.put("/api/kinder/:id", async (req, res) => {
 app.delete("/api/kinder/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await db.query("SELECT bildUrl FROM kinder WHERE id = ?", [id]);
-    const kind = rows[0];
+    const result = await db.query("SELECT bildUrl FROM kinder WHERE id = $1", [id]);
+    const kind = result.rows[0];
     if (kind && kind.bildUrl) {
       const filePath = path.join(uploadDir, path.basename(kind.bildUrl));
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
     }
-    await db.query("DELETE FROM kinder WHERE id = ?", [id]);
+    await db.query("DELETE FROM kinder WHERE id = $1", [id]);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -108,12 +108,12 @@ app.delete("/api/kinder/:id", async (req, res) => {
 });
 
 app.post("/api/kinder/:id/bild", upload.single("bild"), async (req, res) => {
-  try {
-    const id = req.params.id;
-    if (!req.file) return res.status(400).json({ error: "Keine Datei erhalten" });
+  const { id } = req.params;
+  if (!req.file) return res.status(400).json({ error: "Keine Datei erhalten" });
 
-    const bildUrl = `/images/${req.file.filename}`;
-    await db.query("UPDATE kinder SET bildUrl = ? WHERE id = ?", [bildUrl, id]);
+  const bildUrl = `/images/${req.file.filename}`;
+  try {
+    await db.query("UPDATE kinder SET bildUrl = $1 WHERE id = $2", [bildUrl, id]);
     res.json({ bildUrl });
   } catch (err) {
     res.status(500).json({ error: "Upload fehlgeschlagen" });
@@ -123,19 +123,21 @@ app.post("/api/kinder/:id/bild", upload.single("bild"), async (req, res) => {
 app.delete("/api/kinder/:id/bild", async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await db.query("SELECT bildUrl FROM kinder WHERE id = ?", [id]);
-    const kind = rows[0];
+    const result = await db.query("SELECT bildUrl FROM kinder WHERE id = $1", [id]);
+    const kind = result.rows[0];
     if (kind && kind.bildUrl) {
       const filePath = path.join(uploadDir, path.basename(kind.bildUrl));
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
     }
-    await db.query("UPDATE kinder SET bildUrl = NULL WHERE id = ?", [id]);
+    await db.query("UPDATE kinder SET bildUrl = NULL WHERE id = $1", [id]);
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ error: "Fehler beim Löschen des Bildes." });
   }
 });
 
-// === Server starten ===
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`✅ Server läuft auf Port ${PORT}`));
+// === Tabelle erstellen und Server starten ===
+createTableIfNotExists().then(() => {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`✅ Server läuft auf Port ${PORT}`));
+});

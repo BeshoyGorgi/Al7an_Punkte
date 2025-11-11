@@ -1,15 +1,16 @@
-import mysql from "mysql2/promise";
+import pkg from "pg";
 import dotenv from "dotenv";
 dotenv.config();
 
-const pool = mysql.createPool({
+const { Pool } = pkg;
+
+const pool = new Pool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+  port: process.env.DB_PORT || 5432,
+  ssl: { rejectUnauthorized: false }, // wichtig bei Render
 });
 
 export default pool;
