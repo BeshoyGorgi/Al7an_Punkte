@@ -11,6 +11,7 @@ const RED_AFTER_DAYS = 2;     // 4 Wochen
 
 let aktiveZelle = null;
 
+// === Farbe nach zeit ändern ===
 function updateRowColor(row) {
   const lastUpdated = new Date(row.dataset.lastUpdated);
   const diffDays = (Date.now() - lastUpdated) / (1000 * 60); //Tage (1000 * 60 * 60 * 24) Minuten (1000 * 60)
@@ -19,6 +20,12 @@ function updateRowColor(row) {
   else if (diffDays >= ORANGE_AFTER_DAYS) row.style.backgroundColor = "orange";
   else row.style.backgroundColor = ""; // Standardfarbe
 }
+
+// Prüft alle 10 Sekunden, ob sich die Farbe ändern muss
+setInterval(() => {
+  tbody.querySelectorAll("tr").forEach(row => updateRowColor(row));
+}, 10000); // 10000ms = 10 Sekunden
+
 
 // === Kinder aus DB laden ===
 
