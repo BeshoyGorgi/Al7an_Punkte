@@ -83,13 +83,19 @@ app.put("/api/kinder/:id", async (req, res) => {
   if (fields.length === 0) return res.status(400).json({ error: "Keine Felder zum Aktualisieren" });
 
   const setString = fields.map((f, i) => `${f} = $${i + 1}`).join(", ");
+
   try {
+    // Update ausführen
     await db.query(`UPDATE kinder SET ${setString} WHERE id = $${fields.length + 1}`, [...values, id]);
-    res.json({ success: true });
+
+    // Den aktualisierten Datensatz holen
+    const result = await db.query("SELECT * FROM kinder WHERE id = $1", [id]);
+    res.json(result.rows[0]); // alles zurückgeben, inkl. anwesenheit_G/U
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 app.delete("/api/kinder/:id", async (req, res) => {
   const { id } = req.params;
