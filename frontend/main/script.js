@@ -208,10 +208,6 @@ punkteMenue.addEventListener("click", async (e) => {
   const aktuellerWert = parseInt(aktiveZelle.textContent) || 0;
   aktiveZelle.textContent = aktuellerWert + wert;
 
-  // Wenn der Punktwert geändert wird, Hintergrund zurücksetzen
-  aktiveZelle.style.backgroundColor = "";
-  aktiveZelle.dataset.manualReset = "true"; 
-
   const zeile = aktiveZelle.parentElement;
   aktualisiereGesamt(zeile);
 
@@ -230,17 +226,18 @@ punkteMenue.addEventListener("click", async (e) => {
       }),
     });
 
-    // Spaltte orange Rot färben
-    const spaltenIndex = zelle.cellIndex;
+    // **Timestamp sofort auf jetzt setzen**
+    const spaltenIndex = aktiveZelle.cellIndex;
     if (spaltenIndex === 1) zeile.dataset.lastUpdatedHymne = new Date();
     if (spaltenIndex === 3) zeile.dataset.lastUpdatedAnwesenheitG = new Date();
     if (spaltenIndex === 4) zeile.dataset.lastUpdatedAnwesenheitU = new Date();
-    
-    // Wenn Zelle neu geändert wurde, darf sie später wieder automatisch orange/rot werden
+
+    // **Hintergrund neutral setzen**
+    aktiveZelle.style.backgroundColor = "";
+    // manualReset muss false sein, damit Zeit wieder zählt
     aktiveZelle.dataset.manualReset = "false";
 
     updateCellColor(zeile); // Farbe sofort neu berechnen
-
 
   } catch (err) {
     console.error("Fehler beim Speichern der Punkte:", err);
