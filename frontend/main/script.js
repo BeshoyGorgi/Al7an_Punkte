@@ -410,6 +410,50 @@ function markiereHoverbareZellen() {
 }
 markiereHoverbareZellen();
 
+
+// === Hover über Hymne / Anwesenheit ===
+const tooltip = document.getElementById("customTooltip");
+
+tabelle.addEventListener("mousemove", (e) => {
+  const zelle = e.target.closest("td");
+  if (!zelle) {
+    tooltip.style.opacity = 0;
+    return;
+  }
+
+  const zeile = zelle.parentElement;
+  const spalte = zelle.cellIndex;
+
+  // Nur bei Hymne (1), Anwesenheit G (3) und Anwesenheit U (4)
+  if (![1, 3, 4].includes(spalte)) {
+    tooltip.style.opacity = 0;
+    return;
+  }
+
+  let datum = null;
+  if (spalte === 1 && zeile.dataset.lastUpdatedHymne)
+    datum = zeile.dataset.lastUpdatedHymne;
+  if (spalte === 3 && zeile.dataset.lastUpdatedAnwesenheitG)
+    datum = zeile.dataset.lastUpdatedAnwesenheitG;
+  if (spalte === 4 && zeile.dataset.lastUpdatedAnwesenheitU)
+    datum = zeile.dataset.lastUpdatedAnwesenheitU;
+
+  if (datum) {
+    tooltip.textContent = `Letzte Änderung: ${new Date(datum).toLocaleString("de-DE")}`;
+    tooltip.style.opacity = 1;
+    tooltip.style.top = `${e.pageY - 35}px`;
+    tooltip.style.left = `${e.pageX + 10}px`;
+  } else {
+    tooltip.style.opacity = 0;
+  }
+});
+
+tabelle.addEventListener("mouseleave", () => {
+  tooltip.style.opacity = 0;
+});
+
+
+
 // === Tabelle sortieren ===
 function sortiereNachGesamt() {
   const zeilen = Array.from(tbody.querySelectorAll("tr"));
