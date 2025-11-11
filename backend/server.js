@@ -5,6 +5,24 @@ import { createTableIfNotExists } from "./initDb.js";
 import dotenv from "dotenv";
 import path from "path";        
 import { fileURLToPath } from "url"; 
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+// Bild-Upload Ordner
+const uploadDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+
+// Multer-Konfiguration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName);
+  }
+});
+const upload = multer({ storage });
+
 
 dotenv.config();
 
@@ -124,6 +142,42 @@ app.delete("/api/kinder/:id", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+
+// === BILD HOCHLADEN ===
+app.post("/api/kinder/:id/bild", upload.single("bild"), async (req, res) => {
+  const { id } = req.params;
+  if (!req.file) return res.status(400).json({ error: "Kein Bild hochgeladen" });
+
+  const bildUrl = `/uploads/${req.file.filename}`;
+  try {
+    await db.query(`UPDATE kinder SET bildurl = $1 WHERE id = $2`, [bildUrl, id]);
+    res.json({ bildUrl });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// === BILD LÖSCHEN ===
+app.delete("/api/kinder/:id/bild", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await db.query(`SELECT bildurl FROM kinder WHERE id = $1`, [id]);
+    const bildUrl = result.rows[0]?.bildurl;
+    if (bildUrl) {
+      const filePath = path.join(process.cwd(), bildUrl);
+      fs.unlink(filePath, () => {});
+    }
+    await db.query(`UPDATE kinder SET bildurl = NULL WHERE id = $1`, [id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Static route für Uploads
+app.use("/uploads", express.static(uploadDir));
+
 
 // === Tabelle erstellen und Server starten ===
 createTableIfNotExists().then(() => {

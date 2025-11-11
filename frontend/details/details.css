@@ -126,3 +126,33 @@ tr:nth-child(even) {
     height: 35px;
   }
 }
+
+
+.kind-bild {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+}
+
+.bild-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.bild-buttons button {
+  background-color: #0C2B4E;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.bild-buttons button:hover {
+  background-color: #1D546C;
+}

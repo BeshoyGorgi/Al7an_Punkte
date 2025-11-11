@@ -31,6 +31,54 @@ async function ladeKinderDetails() {
   }
 }
 
+tbody.addEventListener("click", async (e) => {
+  const id = e.target.dataset.id;
+  if (!id) return;
+
+  // === + BUTTON ===
+  if (e.target.classList.contains("add-bild")) {
+    const fileInput = document.getElementById(`file-${id}`);
+    fileInput.click();
+
+    fileInput.onchange = async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("bild", file);
+
+      const response = await fetch(`${API_BASE_URL}/api/kinder/${id}/bild`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        document.getElementById(`bild-${id}`).src = result.bildUrl;
+      } else {
+        alert("Fehler beim Hochladen des Bildes");
+      }
+    };
+  }
+
+  // === − BUTTON ===
+  if (e.target.classList.contains("remove-bild")) {
+    const confirmDelete = confirm("Bild wirklich entfernen?");
+    if (!confirmDelete) return;
+
+    const response = await fetch(`${API_BASE_URL}/api/kinder/${id}/bild`, {
+      method: "DELETE",
+    });
+
+    if (response.ok) {
+      document.getElementById(`bild-${id}`).src = "/images/placeholder.png";
+    } else {
+      alert("Fehler beim Löschen des Bildes");
+    }
+  }
+});
+
+
 // ====== SUCHFUNKTION ======
 const searchInput = document.getElementById("kinderSearch");
 searchInput.addEventListener("keydown", (e) => {
@@ -103,6 +151,30 @@ function escapeHtml(str) {
 
 // Direkt aufrufen
 ladeKinderDetails();
+
+kinderListe.forEach(kind => {
+  const tr = document.createElement("tr");
+  tr.dataset.id = kind.id;
+
+  const bildUrl = kind.bildurl || "../images/platzhalter.png"; // Platzhalterbild
+
+  tr.innerHTML = `
+    <td>${escapeHtml(kind.name)}</td>
+    <td contenteditable="true">${escapeHtml(kind.klasse || "")}</td>
+    <td contenteditable="true">${escapeHtml(kind.eltern || "")}</td>
+    <td contenteditable="true">${escapeHtml(kind.telefon || "")}</td>
+    <td>
+      <img src="${bildUrl}" alt="Bild von ${kind.name}" class="kind-bild" id="bild-${kind.id}">
+      <div class="bild-buttons">
+        <button class="add-bild" data-id="${kind.id}">+</button>
+        <button class="remove-bild" data-id="${kind.id}">−</button>
+      </div>
+      <input type="file" accept="image/*" id="file-${kind.id}" style="display:none;">
+    </td>
+  `;
+  tbody.appendChild(tr);
+});
+
 
 // Zurück-Button
 document.getElementById("zurueckButton").addEventListener("click", () => {
