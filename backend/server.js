@@ -75,6 +75,7 @@ app.get("/api/kinder", async (req, res) => {
         klasse,
         eltern,
         telefon,
+        bildurl,
         user_email
       FROM kinder
       WHERE user_email = $1
