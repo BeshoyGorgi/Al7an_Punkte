@@ -7,8 +7,13 @@
   <link rel="stylesheet" href="/main/style.css"/>
 </head>
 <body>
-  <img src="..\images\logo.jpeg" alt="Logo" class="header-logo">
-  <div id="stufenAnzeige" class="stufen-anzeige"></div>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <img src="../images/logo.jpeg" alt="Logo" class="header-logo">
+    <div class="stufen-anzeige" id="stufenAnzeige">Klassenübersicht</div>
+    <button class="logout-button" id="logoutButton">Logout</button>
+  </nav>
+
   <div class="wrapper">
     <h1>Punkteverteilung</h1>
 
@@ -25,7 +30,7 @@
           </tr>
         </thead>
         <tbody>
-
+          <!-- Dynamische Zeilen -->
         </tbody>
       </table>
 
@@ -47,10 +52,10 @@
     </div>
 
     <button id="zuDetails" class="link-button">Zu den Kinder-Details</button>
-    <button id="logoutButton">Logout</button>
   </div>
 
-   <div id="customTooltip" class="tooltip"></div>
+  <!-- Tooltip -->
+  <div id="customTooltip" class="tooltip"></div>
 
   <script type="module" src="/main/script.js"></script>
 </body>
