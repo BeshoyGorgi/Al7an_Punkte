@@ -3,7 +3,6 @@ import { API_BASE_URL } from "../config.js";
 const tbody = document.querySelector("#kinderDetails tbody");
 
 // ----- Lade Kinder -----
-// ----- Lade Kinder -----
 async function ladeKinderDetails() {
   try {
     const email = localStorage.getItem("email"); 
@@ -121,9 +120,10 @@ tbody.addEventListener("blur", async (e) => {
   const id = tr.dataset.id;
   if (!id) return;
 
-  const feldMap = { 1: "klasse", 2: "eltern", 3: "telefon" };
+  const feldMap = { 2: "klasse", 3: "eltern", 4: "telefon" };
   const feldName = feldMap[td.cellIndex];
   if (!feldName) return;
+
 
   const wert = td.textContent.trim();
 
