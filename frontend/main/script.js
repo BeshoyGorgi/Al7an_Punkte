@@ -555,3 +555,25 @@ document.getElementById("logoutButton")?.addEventListener("click", () => {
   localStorage.removeItem("email");
   window.location.href = "/login/login.html";
 });
+
+
+// ====== SUCHFUNKTION ======
+const searchInput = document.getElementById("kinderSearch");
+searchInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const query = searchInput.value.trim().toLowerCase();
+    if (!query) return;
+
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+    const match = rows.find(row => row.children[1].textContent.toLowerCase().includes(query));
+
+    if (match) {
+      match.scrollIntoView({ behavior: "smooth", block: "center" });
+      match.style.backgroundColor = "#ffff99"; 
+      setTimeout(() => match.style.backgroundColor = "", 2000);
+    } else {
+      alert(`Kein Kind mit Namen "${searchInput.value}" gefunden.`);
+    }
+  }
+});
