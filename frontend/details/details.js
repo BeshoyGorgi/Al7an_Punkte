@@ -2,146 +2,112 @@ import { API_BASE_URL } from "../config.js";
 
 const tbody = document.querySelector("#kinderDetails tbody");
 
-//Sotierung
+// ----- Hilfsfunktion: Stufe in Zahl umwandeln -----
 function stufenWert(stufe) {
   if (!stufe) return 9999;
   stufe = stufe.trim().toLowerCase();
-
-  if (stufe === "kita" || stufe === "Kita") return 0;
-
+  if (stufe === "kita") return 0;
   const num = parseInt(stufe);
   return isNaN(num) ? 9999 : num;
 }
 
+// ----- Tabelle sortieren (absteigend) -----
 function sortiereTabelle() {
-  const tbody = document.querySelector("#kinderDetails tbody");
   const rows = Array.from(tbody.querySelectorAll("tr"));
-
-  rows.sort((rowA, rowB) => {
-    const stufeA = rowA.children[2].textContent.trim();
-    const stufeB = rowB.children[2].textContent.trim();
-    return stufenWert(stufeB) - stufenWert(stufeA);
-  });
-
-  // Sortierte Reihen wieder einfügen
+  rows.sort((a, b) => stufenWert(b.children[2].textContent) - stufenWert(a.children[2].textContent));
   rows.forEach(r => tbody.appendChild(r));
 }
 
-
-
-// ----- Lade Kinder -----
+// ----- Kinder laden -----
 async function ladeKinderDetails() {
   try {
-    const email = localStorage.getItem("email"); 
+    const email = localStorage.getItem("email");
     const response = await fetch(`${API_BASE_URL}/api/kinder?email=${email}`);
     if (!response.ok) throw new Error("Fehler beim Laden der Kinder");
 
     const kinderListe = await response.json();
     tbody.innerHTML = "";
 
-    // Kinder nach Klasse sortieren (Kita = kleinste Stufe)
+    // Absteigend nach Klasse sortieren
     kinderListe.sort((a, b) => stufenWert(b.klasse) - stufenWert(a.klasse));
 
     kinderListe.forEach(kind => {
-  const tr = document.createElement("tr");
-  tr.dataset.id = kind.id;
+      const tr = document.createElement("tr");
+      tr.dataset.id = kind.id;
 
-  // Bild zuerst
-  const bildUrl = kind.bildurl || "../images/platzhalter.png";
+      const bildUrl = kind.bildurl || "../images/platzhalter.png";
 
-  tr.innerHTML = `
-    <td>
-      <img src="${bildUrl}" alt="Bild von ${kind.name}" class="kind-bild" id="bild-${kind.id}">
-      <div class="bild-buttons">
-        <button class="add-bild" data-id="${kind.id}">+</button>
-        <button class="remove-bild" data-id="${kind.id}">−</button>
-      </div>
-      <input type="file" accept="image/*" id="file-${kind.id}" style="display:none;">
-    </td>
-    <td>${escapeHtml(kind.name)}</td>
-    <td contenteditable="true">${escapeHtml(kind.klasse || "")}</td>
-    <td contenteditable="true">${escapeHtml(kind.eltern || "")}</td>
-    <td contenteditable="true">${escapeHtml(kind.telefon || "")}</td>
-  `;
-  tbody.appendChild(tr);
-});
-
+      tr.innerHTML = `
+        <td>
+          <img src="${bildUrl}" alt="Bild von ${kind.name}" class="kind-bild" id="bild-${kind.id}">
+          <div class="bild-buttons">
+            <button class="add-bild" data-id="${kind.id}">+</button>
+            <button class="remove-bild" data-id="${kind.id}">−</button>
+          </div>
+          <input type="file" accept="image/*" id="file-${kind.id}" style="display:none;">
+        </td>
+        <td>${escapeHtml(kind.name)}</td>
+        <td contenteditable="true">${escapeHtml(kind.klasse || "")}</td>
+        <td contenteditable="true">${escapeHtml(kind.eltern || "")}</td>
+        <td contenteditable="true">${escapeHtml(kind.telefon || "")}</td>
+      `;
+      tbody.appendChild(tr);
+    });
   } catch (err) {
     console.error(err);
     tbody.innerHTML = "<tr><td colspan='5'>Fehler beim Laden der Kinder</td></tr>";
   }
 }
 
+// ----- Bild hoch-/runterladen -----
 tbody.addEventListener("click", async (e) => {
   const id = e.target.dataset.id;
   if (!id) return;
 
-  // === + BUTTON ===
+  // + Bild hochladen
   if (e.target.classList.contains("add-bild")) {
     const fileInput = document.getElementById(`file-${id}`);
     fileInput.click();
-
     fileInput.onchange = async () => {
       const file = fileInput.files[0];
       if (!file) return;
-
       const formData = new FormData();
       formData.append("bild", file);
-
-      const response = await fetch(`${API_BASE_URL}/api/kinder/${id}/bild`, {
-        method: "POST",
-        body: formData,
-      });
-
+      const response = await fetch(`${API_BASE_URL}/api/kinder/${id}/bild`, { method: "POST", body: formData });
       if (response.ok) {
         const result = await response.json();
         document.getElementById(`bild-${id}`).src = result.bildUrl;
-      } else {
-        alert("Fehler beim Hochladen des Bildes");
-      }
+      } else alert("Fehler beim Hochladen des Bildes");
     };
   }
 
-  // === − BUTTON ===
+  // − Bild löschen
   if (e.target.classList.contains("remove-bild")) {
-    const confirmDelete = confirm("Bild wirklich entfernen?");
-    if (!confirmDelete) return;
-
-    const response = await fetch(`${API_BASE_URL}/api/kinder/${id}/bild`, {
-      method: "DELETE",
-    });
-
-    if (response.ok) {
-      document.getElementById(`bild-${id}`).src = "../images/platzhalter.png";
-    } else {
-      alert("Fehler beim Löschen des Bildes");
-    }
+    if (!confirm("Bild wirklich entfernen?")) return;
+    const response = await fetch(`${API_BASE_URL}/api/kinder/${id}/bild`, { method: "DELETE" });
+    if (response.ok) document.getElementById(`bild-${id}`).src = "../images/platzhalter.png";
+    else alert("Fehler beim Löschen des Bildes");
   }
 });
 
-
-// ====== SUCHFUNKTION ======
+// ----- Suche -----
 const searchInput = document.getElementById("kinderSearch");
 searchInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
     const query = searchInput.value.trim().toLowerCase();
     if (!query) return;
-
     const rows = Array.from(tbody.querySelectorAll("tr"));
-    const match = rows.find(row => row.children[1].textContent.toLowerCase().includes(query));
-
+    const match = rows.find(r => r.children[1].textContent.toLowerCase().includes(query));
     if (match) {
       match.scrollIntoView({ behavior: "smooth", block: "center" });
-      match.style.backgroundColor = "#ffff99"; 
+      match.style.backgroundColor = "#ffff99";
       setTimeout(() => match.style.backgroundColor = "", 2000);
-    } else {
-      alert(`Kein Kind mit Namen "${searchInput.value}" gefunden.`);
-    }
+    } else alert(`Kein Kind mit Namen "${searchInput.value}" gefunden.`);
   }
 });
 
-// ----- Save changes on blur -----
+// ----- Änderungen speichern (blur) -----
 tbody.addEventListener("blur", async (e) => {
   const td = e.target;
   if (!td.matches("td[contenteditable='true']")) return;
@@ -166,12 +132,9 @@ tbody.addEventListener("blur", async (e) => {
     if (!response.ok) {
       const result = await response.json();
       alert(result.error || "Fehler beim Speichern in der DB.");
-    } else {
-      if (feldName === "klasse") {
-        sortiereTabelle(); 
-      }
+    } else if (feldName === "klasse") {
+      sortiereTabelle(); // Tabelle nach jeder Klassenänderung absteigend sortieren
     }
-
   } catch (err) {
     console.error("Fehler beim Speichern in der DB:", err);
   }
@@ -185,7 +148,7 @@ tbody.addEventListener("keydown", (e) => {
   }
 });
 
-// ----- Hilfsfunktion -----
+// ----- HTML escapen -----
 function escapeHtml(str) {
   if (!str) return "";
   return String(str)
@@ -196,16 +159,14 @@ function escapeHtml(str) {
     .replaceAll("'", "&#039;");
 }
 
-// Direkt aufrufen
+// ----- Initialisierung -----
 ladeKinderDetails();
 
-
-// Zurück-Button
+// ----- Buttons -----
 document.getElementById("zurueckButton").addEventListener("click", () => {
   window.location.href = "/main/index.html";
 });
 
-// Logout
 document.getElementById("logoutButton").addEventListener("click", () => {
   localStorage.removeItem("email");
   window.location.href = "/login/login.html";
