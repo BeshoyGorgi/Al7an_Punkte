@@ -13,6 +13,21 @@ function stufenWert(stufe) {
   return isNaN(num) ? 9999 : num;
 }
 
+function sortiereTabelle() {
+  const tbody = document.querySelector("#kinderDetails tbody");
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+
+  rows.sort((rowA, rowB) => {
+    const stufeA = rowA.children[2].textContent.trim();
+    const stufeB = rowB.children[2].textContent.trim();
+    return stufenWert(stufeA) - stufenWert(stufeB);
+  });
+
+  // Sortierte Reihen wieder einfügen
+  rows.forEach(r => tbody.appendChild(r));
+}
+
+
 
 // ----- Lade Kinder -----
 async function ladeKinderDetails() {
@@ -139,7 +154,6 @@ tbody.addEventListener("blur", async (e) => {
   const feldName = feldMap[td.cellIndex];
   if (!feldName) return;
 
-
   const wert = td.textContent.trim();
 
   try {
@@ -148,10 +162,16 @@ tbody.addEventListener("blur", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ [feldName]: wert })
     });
+
     if (!response.ok) {
       const result = await response.json();
       alert(result.error || "Fehler beim Speichern in der DB.");
+    } else {
+      if (feldName === "klasse") {
+        sortiereTabelle(); 
+      }
     }
+
   } catch (err) {
     console.error("Fehler beim Speichern in der DB:", err);
   }
