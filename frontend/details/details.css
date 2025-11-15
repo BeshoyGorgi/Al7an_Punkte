@@ -104,6 +104,16 @@ tr:nth-child(even) {
     width: 40px;
     height: 40px;
   }
+
+  .kind-bild {
+    width: 60px;
+    height: 60px;
+  }
+
+  .bild-buttons button {
+    padding: 3px 6px;
+    font-size: 0.75rem;
+  }
 }
 
 /* Suchleiste */
@@ -148,7 +158,8 @@ tr:nth-child(even) {
   }
 
   .bild-buttons button {
-  padding: 2px 4px;
+    padding: 2px 4px;
+    font-size: 0.75rem;
   }
 }
 
