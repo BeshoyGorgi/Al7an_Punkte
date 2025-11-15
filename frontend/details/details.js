@@ -2,6 +2,18 @@ import { API_BASE_URL } from "../config.js";
 
 const tbody = document.querySelector("#kinderDetails tbody");
 
+//Sotierung
+function stufenWert(stufe) {
+  if (!stufe) return 9999;
+  stufe = stufe.trim().toLowerCase();
+
+  if (stufe === "kita" || "Kita") return 0;
+
+  const num = parseInt(stufe);
+  return isNaN(num) ? 9999 : num;
+}
+
+
 // ----- Lade Kinder -----
 async function ladeKinderDetails() {
   try {
@@ -11,6 +23,9 @@ async function ladeKinderDetails() {
 
     const kinderListe = await response.json();
     tbody.innerHTML = "";
+
+    // Kinder nach Klasse sortieren (Kita = kleinste Stufe)
+    kinderListe.sort((a, b) => stufenWert(a.klasse) - stufenWert(b.klasse));
 
     kinderListe.forEach(kind => {
   const tr = document.createElement("tr");
