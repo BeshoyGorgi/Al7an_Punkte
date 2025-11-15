@@ -20,7 +20,7 @@ function sortiereTabelle() {
   rows.sort((rowA, rowB) => {
     const stufeA = rowA.children[2].textContent.trim();
     const stufeB = rowB.children[2].textContent.trim();
-    return stufenWert(stufeA) - stufenWert(stufeB);
+    return stufenWert(stufeB) - stufenWert(stufeA);
   });
 
   // Sortierte Reihen wieder einfügen
